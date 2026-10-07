@@ -1,5 +1,5 @@
 // Offline support: caches the app files so it opens without internet.
-var CACHE = 'gym-tracker-v3';
+var CACHE = 'gym-tracker-v5';
 var FILES = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png',
   'icons/maskable-192.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png',
   'icons/favicon-32.png', 'icons/favicon-48.png'];

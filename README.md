@@ -1,6 +1,6 @@
 # Gym Tracker
 
-Mobile-friendly gym app: BMI and goal weight, weekly workout plan with YouTube how-to links,
+A mobile-friendly gym app (pink theme for women, blue theme for men, chosen at setup): BMI and goal weight, weekly workout plan with YouTube how-to links,
 daily meal plan, water tracker and weight progress chart. All data is saved on the user's own phone.
 
 ## Upload to GitHub and get a free link (GitHub Pages)
