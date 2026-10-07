@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#d6336c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Gym Tracker">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Gym Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff0f5;--card:#fff;--ink:#3d1d2e;--mute:#8d6479;--acc:#d6336c;--ok:#2f9e6b;--line:#f7d1e0;--chip:#fde2ee;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1f1218;--card:#2b1a23;--ink:#fbeef3;--mute:#c9a3b4;--acc:#ff85b3;--ok:#55d198;--line:#44283a;--chip:#3a2230}}
+:root[data-theme="dark"]{--bg:#1f1218;--card:#2b1a23;--ink:#fbeef3;--mute:#c9a3b4;--acc:#ff85b3;--ok:#55d198;--line:#44283a;--chip:#3a2230}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.45}
+main{max-width:520px;margin:0 auto;padding:16px 16px 90px}
+h1{font-size:28px;font-weight:800;margin:6px 0 2px;letter-spacing:-.5px}
+h2{font-size:20px;font-weight:800;margin:0 0 4px}
+p.sub{margin:0 0 14px;color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;border:0;background:none;color:var(--mute);font:600 15px inherit;font-family:inherit;padding:10px;border-radius:12px;cursor:pointer}
+nav button.on{background:var(--chip);color:var(--acc)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.week{display:flex;gap:6px;margin:10px 0 4px}
+.dot{flex:1;text-align:center;font-size:12px;color:var(--mute)}
+.dot i{display:block;height:34px;border-radius:10px;background:var(--chip);margin-bottom:3px;position:relative;overflow:hidden}
+.dot i b{position:absolute;left:0;right:0;bottom:0;background:var(--ok)}
+.dot.today{color:var(--acc);font-weight:800}
+.dot.today i{outline:2px solid var(--acc)}
+.bar{height:10px;background:var(--chip);border-radius:9px;overflow:hidden;margin:8px 0}
+.bar div{height:100%;background:var(--ok);transition:width .3s}
+label.row{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line);cursor:pointer}
+label.row:first-of-type{border-top:0}
+label.row input{width:22px;height:22px;margin-top:2px;accent-color:var(--ok);flex:none}
+label.row span small{display:block;color:var(--mute)}
+label.row input:checked+span{text-decoration:line-through;opacity:.55}
+.cnt{display:flex;align-items:center;gap:10px}
+.cnt button,.btn{border:0;background:var(--acc);color:#fff;font:600 16px inherit;font-family:inherit;border-radius:12px;padding:10px 16px;cursor:pointer}
+.cnt button{width:42px;padding:8px}
+.cnt output{font-size:22px;font-weight:800;min-width:70px;text-align:center}
+.daybtn{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit;border-radius:14px;padding:12px 14px;margin-bottom:8px;cursor:pointer;font-size:16px}
+.daybtn b{display:block}
+.daybtn small{color:var(--mute)}
+.daybtn.open{border-color:var(--acc)}
+ul.ex{margin:8px 0 0;padding-left:20px;color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stats div{background:var(--chip);border-radius:12px;padding:10px;text-align:center}
+.stats strong{display:block;font-size:22px;font-weight:800}
+.stats small{color:var(--mute)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.fields label{font-size:13px;color:var(--mute);display:block}
+input[type=number]{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 16px inherit;font-family:inherit}
+.entry{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line);font-size:15px}
+.entry button{border:0;background:none;color:var(--mute);cursor:pointer;font-size:16px}
+svg{width:100%;height:auto;display:block}
+.note{font-size:13px;color:var(--mute)}
+.hide{display:none}
+.yt{display:inline-block;margin-top:3px;color:var(--acc);font-weight:600;font-size:14px}
+.mc{display:block;color:var(--mute);font-size:13px}
+.dayw{margin-bottom:8px}
+.dayw .daybtn{margin-bottom:0}
+.daylist{border:1px solid var(--acc);border-top:0;border-radius:0 0 14px 14px;background:var(--card);padding:6px 14px 12px}
+.daylist div.it{padding:9px 0;border-top:1px solid var(--line)}
+.daylist div.it:first-child{border-top:0}
+
+h1{font-size:22px;margin:4px 0 0}
+.hero{background:linear-gradient(135deg,#a61e4d,#d6336c 60%,#ff8fb8);color:#fff;border-radius:22px;padding:20px;display:flex;justify-content:space-between;align-items:center;gap:12px;position:relative;overflow:hidden;margin-bottom:14px}
+.hero .bg{position:absolute;right:-24px;bottom:-34px;width:190px;opacity:.13}
+.hero .hi{font-size:14px;opacity:.85}
+.hero .ft{font-size:24px;font-weight:800;line-height:1.15;margin:2px 0 10px}
+.hero .chips span{display:inline-block;background:rgba(255,255,255,.18);border-radius:20px;padding:4px 10px;font-size:13px;margin:0 6px 4px 0}
+.hero .ring{position:relative;flex:none}
+.ic{flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#d6336c,#f783ac)}
+.fxw{display:flex;gap:12px;align-items:flex-start}
+.fxw .tx{flex:1}
+.daybtn{background:var(--g);color:#fff;border:0;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px;border-radius:18px;position:relative;overflow:hidden}
+.daybtn small{color:rgba(255,255,255,.85);font-size:14px}
+.daybtn b{font-size:18px}
+.daybtn .big{position:absolute;right:-8px;bottom:-14px;width:84px;height:84px;opacity:.18}
+.daybtn.open{border-radius:18px 18px 0 0}
+.daybtn .ic{background:rgba(255,255,255,.22);position:relative}
+nav{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));border:1px solid var(--line);border-radius:22px;padding:6px;max-width:496px;margin:0 auto;box-shadow:0 8px 30px rgba(214,51,108,.25)}
+nav button.on{background:var(--acc);color:#fff}
+.stats div{background:linear-gradient(135deg,var(--chip),var(--card));border:1px solid var(--line)}
+.card{border-radius:20px}
+nav button{padding:10px 4px;font-size:14px}
+.mchips{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px}
+.mchips button{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 14px inherit;font-family:inherit;border-radius:20px;padding:8px 14px;cursor:pointer}
+.mchips button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.meal{display:flex;gap:14px;align-items:flex-start}
+.meal h2{margin:0}
+.meal input{width:24px;height:24px;accent-color:var(--ok);flex:none;margin-top:4px}
+body{background:radial-gradient(circle at 92% -4%,rgba(255,143,184,.4),transparent 42%),radial-gradient(circle at -12% 32%,rgba(214,51,108,.13),transparent 40%),var(--bg);background-attachment:fixed}
+section{animation:fi .3s ease-out}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}}
+@keyframes rg{from{stroke-dashoffset:226.2}}
+.ring circle:nth-child(2){animation:rg 1.3s ease-out}
+.card{box-shadow:0 8px 26px rgba(214,51,108,.09);border-radius:24px;padding:18px}
+.hero{border-radius:28px;padding:22px;box-shadow:0 14px 34px rgba(214,51,108,.35)}
+.hero::before{content:"";position:absolute;left:-46px;top:-56px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.13)}
+.hero::after{content:"";position:absolute;right:70px;bottom:-60px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.1)}
+.hero>*{position:relative;z-index:1}
+.hero .bg{z-index:0}
+.hero .ft{font-size:26px;letter-spacing:-.4px}
+.hero .q{font-size:13px;opacity:.92;margin-top:6px;font-style:italic;max-width:210px}
+.dot i{height:auto;aspect-ratio:1;border-radius:50%;box-shadow:inset 0 0 0 2px var(--line)}
+.dot.today i{outline:2px solid var(--acc);outline-offset:2px}
+label.row input[type=checkbox],.meal input[type=checkbox]{appearance:none;-webkit-appearance:none;width:26px;height:26px;border:2px solid var(--acc);border-radius:9px;background:var(--card);display:grid;place-items:center;flex:none;cursor:pointer;transition:background .15s}
+label.row input[type=checkbox]:checked,.meal input[type=checkbox]:checked{background:var(--ok);border-color:var(--ok)}
+label.row input[type=checkbox]:checked::after,.meal input[type=checkbox]:checked::after{content:"";width:6px;height:12px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.drops{display:flex;gap:4px}
+.drops button{flex:1;border:0;background:none;padding:2px;cursor:pointer}
+.drops svg{width:100%;fill:var(--chip);stroke:var(--acc);stroke-width:1.6;transition:fill .2s}
+.drops button.on svg{fill:var(--acc)}
+.btn{background:linear-gradient(135deg,#d6336c,#f783ac);box-shadow:0 8px 18px rgba(214,51,108,.3);border-radius:14px}
+nav button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;padding:8px 4px}
+nav button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bar{height:12px}
+.bar div{background:linear-gradient(90deg,#f783ac,#d6336c)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.bk{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.btn.alt{background:var(--chip);color:var(--acc);box-shadow:none}
+textarea{width:100%;padding:11px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:14px inherit;font-family:inherit;margin:8px 0;resize:vertical}
+input[type=file]{width:100%;margin-top:6px;font-family:inherit;color:var(--mute)}
+input[type=text],select{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 16px inherit;font-family:inherit}
+.scale{background:linear-gradient(90deg,#74c0fc 0 14%,#69db7c 14% 40%,#ffd43b 40% 60%,#ff6b6b 60%);height:14px;border-radius:9px;position:relative;margin:26px 0 6px}
+.scale i{position:absolute;top:-8px;width:6px;height:30px;background:var(--ink);border-radius:3px;transform:translateX(-50%);box-shadow:0 0 0 2px var(--card)}
+.sl{display:grid;grid-template-columns:14fr 26fr 20fr 40fr;font-size:12px;color:var(--mute)}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.kv:first-child{border-top:0}
+.kv b{text-align:right}
+details summary{cursor:pointer;font-weight:600;color:var(--acc)}
+.warn{background:var(--chip);border-radius:14px;padding:12px;margin:10px 0 0}
+</style>
+</head>
+<body>
+<main>
+<section id="setup" class="hide"></section>
+<h1 id="title">Gym Tracker</h1>
+<p class="sub" id="sub"></p>
+<section id="today"></section>
+<section id="plan" class="hide"></section>
+<section id="meals" class="hide"></section>
+<section id="prog" class="hide"></section>
+</main>
+<nav>
+<button data-t="today" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>Today</span></button>
+<button data-t="plan"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Weekly plan</span></button>
+<button data-t="meals"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg><span>Meals</span></button>
+<button data-t="prog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h16M8 15l4-4 3 3 5-6"/></svg><span>Progress</span></button>
+</nav>
+<script>
+var PLAN=[
+{n:"Monday",t:"Full body strength",x:["Warm-up: brisk walk 5 min","Squats: 3 x 12","Push-ups (on knees is fine): 3 x 10","Dumbbell rows: 3 x 12","Plank: 3 x 30 sec","Cool-down stretch 5 min"]},
+{n:"Tuesday",t:"Cardio and core",x:["Brisk walk or treadmill: 30 min","Crunches: 3 x 15","Bicycle crunches: 3 x 20","Leg raises: 3 x 12","Cool-down stretch 5 min"]},
+{n:"Wednesday",t:"Lower body",x:["Warm-up: brisk walk 5 min","Lunges: 3 x 10 each leg","Glute bridges: 3 x 15","Step-ups: 3 x 10 each leg","Calf raises: 3 x 15","Wall sit: 3 x 30 sec"]},
+{n:"Thursday",t:"Active rest",x:["Easy walk: 20 to 30 min","Full body stretching: 10 min"]},
+{n:"Friday",t:"Upper body and intervals",x:["Warm-up: 5 min","Shoulder press: 3 x 12","Bicep curls: 3 x 12","Chair dips: 3 x 10","Intervals: 20 sec fast, 40 sec easy, 8 rounds","Cool-down stretch 5 min"]},
+{n:"Saturday",t:"Long cardio",x:["Cycling, swimming or fast walk: 40 to 45 min","Stretching: 10 min"]},
+{n:"Sunday",t:"Rest and reset",x:["Easy walk: 20 min","Plan meals for the week","Weekly weigh-in (log it in Progress)"]}];
+var HAB=["Drink 8 glasses of water","Walk 8,000 steps","Sleep 7+ hours","Eat protein with each meal"];
+var M=[["Warm-up","Treadmill or brisk walk indoors","warm up exercises before workout"],["Squats","Bodyweight, or Smith machine / dumbbells","how to do squats correctly for beginners"],["Push-ups","Floor mat (no machine)","how to do push ups for beginners on knees"],["Dumbbell rows","Dumbbells + flat bench","how to do dumbbell row"],["Plank","Floor mat (no machine)","how to do plank correctly"],["Cool-down","Floor mat","full body cool down stretching routine"],["Brisk walk or treadmill","Treadmill","treadmill brisk walking workout for weight loss"],["Crunches","Floor mat","how to do crunches correctly"],["Bicycle crunches","Floor mat","how to do bicycle crunches"],["Leg raises","Floor mat (or captain's chair machine)","how to do lying leg raises"],["Lunges","Bodyweight or dumbbells","how to do lunges correctly"],["Glute bridges","Floor mat","how to do glute bridge"],["Step-ups","Gym step or bench","how to do step ups exercise"],["Calf raises","Step edge or calf raise machine","how to do calf raises"],["Wall sit","Wall (no machine)","how to do wall sit"],["Easy walk","Outdoors or treadmill","walking for weight loss tips"],["Full body stretching","Floor mat","full body stretching routine for beginners"],["Shoulder press","Dumbbells or shoulder press machine","how to do dumbbell shoulder press"],["Bicep curls","Dumbbells","how to do bicep curls"],["Chair dips","Bench or sturdy chair","how to do bench dips for beginners"],["Intervals","Treadmill, bike or jumping jacks","HIIT workout for beginners 20 40 intervals"],["Cycling","Stationary bike, pool or treadmill","stationary bike workout for weight loss"],["Stretching","Floor mat","full body stretching routine for beginners"],["Plan meals","","healthy meal prep for weight loss"],["Weekly weigh-in","Weighing scale",""]];
+function fx(e){var m=["","",""];for(var i=0;i<M.length;i++){if(e.indexOf(M[i][0])==0){m=M[i];break}}
+ return '<span class="ic">'+svg(kind(e),24)+'</span><span class="tx">'+e+(m[1]?'<span class="mc">Machine: '+m[1]+'</span>':'')+(m[2]?'<a class="yt" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query='+encodeURIComponent(m[2])+'">&#9654; Watch how to do it on YouTube</a>':'')+'</span>'}
+var IC={dumbbell:'<path d="M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12"/>',walk:'<circle cx="13" cy="4.5" r="2"/><path d="M12 8l-3 4 3 3-1 5M12 8l3 3h3M9 12l-3 1"/>',bike:'<circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5l3 7M10 9l3 7M9 7h3"/>',mat:'<rect x="3" y="15" width="18" height="4" rx="2"/><circle cx="6" cy="10" r="2"/><path d="M8 11l11 3"/>',scale:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 10a4 4 0 018 0M12 10l2-2"/>',sun:'<circle cx="12" cy="14" r="4"/><path d="M12 4v3M4 14H2M22 14h-2M6 8L4.5 6.5M18 8l1.5-1.5M3 20h18"/>',plate:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/>',moon:'<path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/>',body:'<circle cx="12" cy="4.5" r="2"/><path d="M12 7v6M6 9l6 1 6-1M12 13l-4 7M12 13l4 7"/>'};
+function svg(n,z,c){return '<svg class="'+(c||'')+'" viewBox="0 0 24 24" width="'+z+'" height="'+z+'" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg>'}
+function kind(e){if(/^Cycling/.test(e))return"bike";if(/^(Warm-up|Brisk|Easy|Intervals)/.test(e))return"walk";if(/^(Plank|Crunches|Bicycle|Leg raises|Glute|Wall)/.test(e))return"mat";if(/^(Cool-down|Full body|Stretching|Plan)/.test(e))return"body";if(/Weigh/.test(e))return"scale";return"dumbbell"}
+var DG=["#d6336c,#f783ac","#c2255c,#ff8787","#e64980,#faa2c1","#ae3ec9,#f06595","#f06595,#ffa8a8","#be4bdb,#f783ac","#c9879f,#f3b6cb"],DI=["dumbbell","walk","dumbbell","body","dumbbell","bike","body"];
+function streak(){var n=0,d=new Date(now);var dd=S.days[key(d)];if(!(dd&&dd.x.length))d.setDate(d.getDate()-1);for(var i=0;i<90;i++){var q=S.days[key(d)];if(q&&q.x.length){n++;d.setDate(d.getDate()-1)}else break}return n}
+var MEALS=[
+["2-egg vegetable omelette, 1 whole wheat roti, green tea","Grilled chicken, 1 roti, cucumber and tomato salad, plain raita","Moong daal with sauteed spinach, 1 small roti"],
+["Oats cooked in milk with banana slices and a few almonds","Chana (chickpea) salad with onion, tomato and lemon, 1 roti","Grilled fish with steamed vegetables"],
+["2 boiled eggs, 1 slice whole wheat toast, sliced tomato","Chicken karahi cooked in little oil, large salad, 1 roti","Vegetable soup with grilled chicken pieces"],
+["Plain yogurt with fruit and a spoon of seeds","Masoor daal, small bowl of brown rice, salad","Egg bhurji with vegetables, 1 roti"],
+["Besan chilla with vegetables and mint chutney","Grilled chicken tikka, salad, plain raita","Mixed vegetable curry, 1 roti"],
+["Vegetable omelette with 1 slice whole wheat toast","Chicken and vegetable pulao (small plate), raita","Lentil soup with a big salad"],
+["2 boiled or poached eggs and a bowl of fruit","Grilled fish or chicken, roasted vegetables, 1 roti","Light dinner: daal, salad, plain yogurt"]];
+var MT=[["Breakfast","8 to 9 am","sun","#ff922b,#ffc078"],["Lunch","1 to 2 pm","plate","#e64980,#faa2c1"],["Dinner","7 to 8 pm","moon","#9c36b5,#e599f7"]],mealDay=0;
+var QS=["Small steps every day add up.","Strong is the new beautiful.","Progress, not perfection.","One workout away from a good mood.","Consistency beats intensity.","Your future self will thank you.","Rest is part of the plan."];
+var DL=null;
+function code(){return JSON.stringify({app:"gym",v:1,log:S.log,goal:S.goal,days:S.days,profile:S.profile})}
+function msg(t){var m=$("bkm");if(m)m.textContent=t}
+function restore(txt){try{var o=JSON.parse(txt.trim());if(!o||!Array.isArray(o.log)||typeof o.days!="object")throw 0;
+ var by={};S.log.concat(o.log).forEach(function(e){if(e&&e.d&&e.w>0)by[e.d]=e});S.log=Object.keys(by).map(function(k){return by[k]});
+ for(var k in o.days)S.days[k]=o.days[k];if(o.goal>0)S.goal=o.goal;if(o.profile&&o.profile.name)S.profile=o.profile;save();all();document.querySelector("[data-t=prog]").click();msg("Backup restored.")}catch(e){msg("That backup could not be read. Check the file or code and try again.")}}
+function esc(t){return String(t).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function fn(){return esc(((S.profile&&S.profile.name)||"").split(" ")[0])}
+function r1(x){return Math.round(x*10)/10}
+function calc(p){var m=p.h/100,m2=m*m,bmi=p.w/m2,lo=18.5*m2,hi=24.9*m2,cat=bmi<18.5?"Underweight":bmi<25?"Healthy":bmi<30?"Overweight":"Obese";
+ var bmr=10*p.w+6.25*p.h-5*p.age+(p.sex=="M"?5:-161),tdee=Math.round(bmr*p.act/10)*10,floor=p.sex=="M"?1500:1200,goal=null,lose=0;
+ if(bmi>=25){goal=Math.round(23*m2*2)/2;lose=r1(Math.max(0,p.w-goal))}
+ var eat=lose>0?Math.round(Math.max(floor,tdee-500)/10)*10:tdee,gap=tdee-eat,pace=lose>0?Math.max(0,gap*7/7700):0,weeks=pace>0.1?Math.ceil(lose/pace):0,ms=r1(p.w*0.05);
+ return{bmi:bmi,lo:lo,hi:hi,cat:cat,tdee:tdee,eat:eat,goal:goal,lose:lose,pace:pace,weeks:weeks,ms:ms,msw:pace>0.1?Math.ceil(ms/pace):0}}
+function planHTML(p){var r=calc(p),h='<div class="kv"><span>BMI</span><b>'+r1(r.bmi)+' ('+r.cat+')</b></div><div class="kv"><span>Healthy weight range</span><b>'+r1(r.lo)+' to '+r1(r.hi)+' kg</b></div>';
+ if(r.lose>0){h+='<div class="kv"><span>Suggested goal weight</span><b>'+r.goal+' kg</b></div><div class="kv"><span>Weight to lose</span><b>'+r.lose+' kg</b></div>'+(r.weeks?'<div class="kv"><span>Safe pace</span><b>about '+r1(r.pace)+' kg a week</b></div><div class="kv"><span>Time to reach goal</span><b>about '+r.weeks+' weeks ('+Math.round(r.weeks/4.3)+' months)</b></div><div class="kv"><span>First milestone</span><b>lose '+r.ms+' kg in about '+r.msw+' weeks</b></div>':'')}
+ h+='<div class="kv"><span>Calories your body burns daily</span><b>about '+r.tdee+' kcal</b></div><div class="kv"><span>'+(r.lose>0?'Eat about (to lose weight)':'Eat about (to stay at this weight)')+'</span><b>'+r.eat+' kcal a day</b></div><div class="kv"><span>Burn in each workout or long walk</span><b>about '+(r.lose>0?300:200)+' kcal</b></div>';
+ var msg=r.cat=="Underweight"?"Your BMI is below the healthy range, so losing weight is not recommended. Eat regular meals with enough protein and build strength with light weights. A doctor can check if you need to gain weight.":r.cat=="Healthy"?"Your weight is in the healthy range, so there is no need to lose weight. To lose fat and tone up, focus on strength training, daily walking and tracking your waist.":"A steady loss of about 0.5 kg a week is safe and easier to keep off. Losing just 5% of your body weight first already helps your health.";
+ return h+'<div class="warn">'+msg+'</div><p class="note">These are estimates, not medical advice. For South Asian adults health risks can start from a BMI of 23, and waist size matters too. Never eat below '+(p.sex=="M"?1500:1200)+' kcal a day without a doctor. If you have a health condition, check with a doctor first.</p>'}
+function planCard(){var p=S.profile;if(!p)return"";return'<div class="card"><h2>Your plan</h2>'+planHTML(p)+'<button class="btn alt" id="edp" style="margin-top:10px">Update my details</button></div>'}
+function show(setupOn){["today","plan","meals","prog"].forEach(function(i){$(i).classList.add("hide")});$("setup").classList.toggle("hide",!setupOn);document.querySelector("nav").style.display=setupOn?"none":"";window.scrollTo(0,0)}
+function showApp(){var p=S.profile,t=esc(p.name)+"'s Gym Tracker";$("title").innerHTML=t;document.title=p.name+"'s Gym Tracker";$("setup").classList.add("hide");document.querySelector("nav").style.display="";all();document.querySelector("[data-t=today]").click()}
+function opt(v,c,t){return'<option value="'+v+'"'+(c==v?' selected':'')+'>'+t+'</option>'}
+function setup(edit){var p=S.profile||{};show(true);
+ $("setup").innerHTML='<div class="hero"><div><div class="hi">Welcome</div><div class="ft">Let\'s build your plan</div><div class="q">Share a few details to get your BMI, goal weight and daily calorie targets.</div></div></div><div class="card"><div class="fields"><div style="grid-column:1/-1"><label for="nm">Your name</label><input id="nm" type="text" maxlength="30" autocomplete="given-name" value="'+esc(p.name||"")+'"></div><div><label for="sx">Gender</label><select id="sx">'+opt("F",p.sex,"Female")+opt("M",p.sex,"Male")+'</select></div><div><label for="ag">Age (years)</label><input id="ag" type="number" min="18" max="80" inputmode="numeric" value="'+(p.age||"")+'"></div><div><label for="ht">Height (cm)</label><input id="ht" type="number" min="120" max="230" inputmode="decimal" value="'+(p.h||"")+'"></div><div><label for="wt">Weight (kg)</label><input id="wt" type="number" step="0.1" min="30" max="250" inputmode="decimal" value="'+(p.w||"")+'"></div><div style="grid-column:1/-1"><label for="ac">Daily activity</label><select id="ac">'+opt(1.2,p.act,"Mostly sitting")+opt(1.375,p.act,"Light: walking and 1 to 3 workouts a week")+opt(1.55,p.act,"Active: 4 to 5 workouts a week")+'</select></div></div><p class="note" style="margin:0 0 8px">Tip: 5 ft 4 in is about 163 cm. Gender is used only for the calorie estimate.</p><p id="sem" class="note" style="color:var(--acc);font-weight:600" role="alert"></p><button class="btn" id="sgo" style="width:100%">Calculate my plan</button>'+(edit?'<button class="btn alt" id="scancel" style="width:100%;margin-top:8px">Cancel</button>':'')+'</div>'+(edit?'':'<details class="card"><summary>I already have a backup</summary><textarea id="sbt" rows="3" placeholder="Paste backup code here" aria-label="Backup code"></textarea><button class="btn alt" id="sbr">Restore</button><p id="sbm" class="note" role="status"></p></details>')}
+function submitSetup(){var nm=$("nm").value.trim(),ag=+$("ag").value,ht=+$("ht").value,wt=+$("wt").value,e=$("sem");
+ if(!nm){e.textContent="Please enter your name.";return}
+ if(!(ag>=18&&ag<=80)){e.textContent="This app is for adults aged 18 to 80. Enter your age.";return}
+ if(!(ht>=120&&ht<=230)){e.textContent="Enter your height in cm, between 120 and 230.";return}
+ if(!(wt>=30&&wt<=250)){e.textContent="Enter your weight in kg, between 30 and 250.";return}
+ var pr={name:nm,sex:$("sx").value,age:ag,h:ht,w:wt,act:+$("ac").value},r=calc(pr),old=S.log.filter(function(x){return x.d==key(now)})[0];
+ S.profile=pr;if(r.lose>0)S.goal=r.goal;S.log=S.log.filter(function(x){return x.d!=key(now)});S.log.push({d:key(now),w:wt,c:old?old.c:null});save();all();
+ var pos=(Math.min(40,Math.max(15,r.bmi))-15)/25*100;
+ $("setup").innerHTML='<div class="hero"><div><div class="hi">'+esc(nm.split(" ")[0])+', your BMI is</div><div class="ft" style="font-size:46px;margin:0">'+r1(r.bmi)+'</div><div class="chips"><span>'+r.cat+'</span></div></div></div><div class="card"><div class="scale"><i style="left:'+pos+'%"></i></div><div class="sl"><span>Under</span><span>Healthy</span><span>Over</span><span>Obese</span></div></div><div class="card"><h2>Your plan</h2>'+planHTML(pr)+'</div><button class="btn" id="sstart" style="width:100%">Start my plan</button>';window.scrollTo(0,0)}
+var S={log:[],goal:null,days:{}},openDay=null;
+try{var r=localStorage.getItem("ft1");if(r)S=JSON.parse(r)}catch(e){}
+function save(){try{localStorage.setItem("ft1",JSON.stringify(S))}catch(e){}}
+function key(d){return d.toLocaleDateString("en-CA")}
+function pi(d){return (d.getDay()+6)%7}
+function day(k){if(!S.days[k])S.days[k]={x:[],h:[],w:0};return S.days[k]}
+function $(i){return document.getElementById(i)}
+var now=new Date();
+
+function today(){
+ var p=PLAN[pi(now)],k=key(now),d=day(k),tot=p.x.length,dn=d.x.length;
+ var mon=new Date(now);mon.setDate(now.getDate()-pi(now));
+ var wk="";for(var i=0;i<7;i++){var dt=new Date(mon);dt.setDate(mon.getDate()+i);var dd=S.days[key(dt)],pc=dd?Math.round(dd.x.length/PLAN[i].x.length*100):0;
+  wk+='<div class="dot'+(i==pi(now)?' today':'')+'"><i><b style="height:'+pc+'%"></b></i>'+PLAN[i].n.slice(0,3)+'</div>'}
+ var pc0=Math.round(dn/tot*100),wd=0;for(var j=0;j<7;j++){var q=S.days[key(new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+j))];if(q&&q.x.length==PLAN[j].x.length)wd++}
+ var hero='<div class="hero">'+svg(DI[pi(now)],190,'bg')+'<div><div class="hi">Hello, '+fn()+'</div><div class="ft">'+p.t+'</div><div class="chips"><span>'+streak()+'-day streak</span><span>'+wd+' full workouts this week</span><span>Water '+d.w+'/8</span></div><div class="q">'+QS[pi(now)]+'</div></div><div class="ring"><svg width="88" height="88" viewBox="0 0 88 88" role="img" aria-label="'+pc0+' percent done"><circle cx="44" cy="44" r="36" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="9"/><circle cx="44" cy="44" r="36" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-dasharray="226.2" stroke-dashoffset="'+(226.2*(1-pc0/100))+'" transform="rotate(-90 44 44)"/><text x="44" y="50" text-anchor="middle" fill="#fff" font-size="18" font-weight="800">'+pc0+'%</text></svg></div></div>';
+ var h=hero+'<div class="card"><h2>This week</h2><div class="week">'+wk+'</div></div>';
+ h+='<div class="card"><h2>'+p.n+': '+p.t+'</h2><p class="sub" style="margin-bottom:0">'+dn+' of '+tot+' done</p><div class="bar"><div style="width:'+dn/tot*100+'%"></div></div>';
+ p.x.forEach(function(e,i){h+='<label class="row"><input type="checkbox" data-x="'+i+'"'+(d.x.indexOf(i)>-1?' checked':'')+'><span class="fxw">'+fx(e)+'</span></label>'});
+ h+='</div><div class="card"><h2>Daily habits</h2>';
+ HAB.forEach(function(e,i){h+='<label class="row"><input type="checkbox" data-h="'+i+'"'+(d.h.indexOf(i)>-1?' checked':'')+'><span>'+e+'</span></label>'});
+ h+='</div><div class="card"><h2>Water</h2><p class="note" style="margin:0 0 8px">Tap a drop for each glass: '+d.w+' of 8</p><div class="drops">'+[0,1,2,3,4,5,6,7].map(function(i){return'<button data-wd="'+i+'" aria-label="Glass '+(i+1)+'"'+(i<d.w?' class="on"':'')+'><svg viewBox="0 0 24 24"><path d="M12 3C9 8 6 11 6 15a6 6 0 0012 0c0-4-3-7-6-12z"/></svg></button>'}).join('')+'</div></div>';
+ if(dn==tot)h='<div class="card" style="background:var(--ok);color:#fff;border:0"><b>Workout complete for today. Well done!</b></div>'+h;
+ $("today").innerHTML=h;
+}
+function plan(){
+ var h='<div class="card"><h2>Weekly plan</h2><p class="note" style="margin:0">4 workout days, 1 cardio day, 2 rest days. Tap a day to see each exercise, the machine to use and a YouTube video showing how. Do every session slowly with good form and rest 45 to 60 seconds between sets. Start with light weights.</p></div>';
+ PLAN.forEach(function(p,i){h+='<div class="dayw"><button class="daybtn'+(openDay===i?' open':'')+'" data-d="'+i+'" style="--g:linear-gradient(135deg,'+DG[i]+')"><span><b>'+p.n+'</b><small>'+p.t+'</small></span><span class="ic">'+svg(DI[i],24)+'</span>'+svg(DI[i],84,'big')+'</button>'+(openDay===i?'<div class="daylist">'+p.x.map(function(e){return'<div class="it fxw">'+fx(e)+'</div>'}).join('')+'</div>':'')+'</div>'});
+ h+='<div class="card"><h2>Simple eating guide</h2><ul class="ex" style="margin:0"><li>Fill half the plate with vegetables, a quarter with protein (eggs, lentils, chicken, fish, yogurt)</li><li>Choose roti, rice or oats in smaller portions</li><li>Cut sugary drinks, fried snacks and sweets to occasional treats</li><li>Do not skip meals; eat slowly</li></ul></div>';
+ $("plan").innerHTML=h;
+}
+function chart(){
+ var L=S.log.slice().sort(function(a,b){return a.d<b.d?-1:1});if(L.length<2)return'<p class="note">Log at least two weigh-ins to see your trend line.</p>';
+ var ws=L.map(function(e){return e.w});if(S.goal)ws.push(S.goal);
+ var mn=Math.min.apply(0,ws)-1,mx=Math.max.apply(0,ws)+1,W=320,H=150,P=24;
+ function X(i){return P+i*(W-2*P)/(L.length-1)}function Y(v){return H-P-(v-mn)/(mx-mn)*(H-2*P)}
+ var pts=L.map(function(e,i){return X(i)+","+Y(e.w)}).join(" ");
+ var g=S.goal?'<line x1="'+P+'" x2="'+(W-P)+'" y1="'+Y(S.goal)+'" y2="'+Y(S.goal)+'" stroke="var(--ok)" stroke-dasharray="5 4"/><text x="'+(W-P)+'" y="'+(Y(S.goal)-5)+'" text-anchor="end" font-size="10" fill="var(--ok)">Goal '+S.goal+'</text>':'';
+ return'<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Weight over time">'+g+'<polygon points="'+X(0)+','+(H-P)+' '+pts+' '+X(L.length-1)+','+(H-P)+'" fill="var(--acc)" opacity=".13"/><polyline points="'+pts+'" fill="none" stroke="var(--acc)" stroke-width="3" stroke-linejoin="round"/>'+L.map(function(e,i){return'<circle cx="'+X(i)+'" cy="'+Y(e.w)+'" r="4" fill="var(--acc)"/>'}).join('')+'<text x="'+P+'" y="'+(H-6)+'" font-size="10" fill="var(--mute)">'+L[0].d.slice(5)+'</text><text x="'+(W-P)+'" y="'+(H-6)+'" font-size="10" text-anchor="end" fill="var(--mute)">'+L[L.length-1].d.slice(5)+'</text></svg>';
+}
+function prog(){
+ var L=S.log.slice().sort(function(a,b){return a.d<b.d?-1:1}),f=L[0],l=L[L.length-1];
+ var ch=f?(l.w-f.w).toFixed(1):"0.0",left=(S.goal&&l)?Math.max(0,l.w-S.goal).toFixed(1):"-";
+ var wo=0;Object.keys(S.days).forEach(function(k){var d=S.days[k],i=pi(new Date(k+"T00:00"));if(PLAN[i]&&d.x.length==PLAN[i].x.length)wo++});
+ var h=planCard()+'<div class="card"><h2>Your progress</h2><div class="stats"><div><strong>'+(l?l.w:"-")+'</strong><small>Now (kg)</small></div><div><strong>'+ch+'</strong><small>Change (kg)</small></div><div><strong>'+left+'</strong><small>To goal (kg)</small></div></div>'+chart()+'<p class="note">Workouts fully completed: <b>'+wo+'</b></p></div>';
+ h+='<div class="card"><h2>Log weigh-in</h2><div class="fields"><div><label for="w">Weight (kg)</label><input id="w" type="number" step="0.1" min="20" inputmode="decimal"></div><div><label for="wa">Waist (cm, optional)</label><input id="wa" type="number" step="0.5" min="30" inputmode="decimal"></div><div><label for="g">Goal weight (kg)</label><input id="g" type="number" step="0.1" min="20" inputmode="decimal" value="'+(S.goal||"")+'"></div></div><button class="btn" id="add">Save</button>';
+ h+='<p class="note">Weigh once a week, same day, same time, in the morning. A healthy pace is about 0.25 to 0.5 kg per week. Waist size often drops even when the scale is slow.</p></div>';
+ h+='<div class="card"><h2>History</h2>';
+ if(!L.length)h+='<p class="note">No entries yet. Add the first weigh-in above.</p>';
+ L.slice().reverse().forEach(function(e){h+='<div class="entry"><span>'+e.d+'</span><span>'+e.w+' kg'+(e.c?' / waist '+e.c+' cm':'')+'</span><button data-del="'+e.d+'" aria-label="Delete entry">&#10005;</button></div>'});
+ h+='<p class="note" style="margin-top:12px">This is general fitness guidance, not medical advice. If you have any health condition or pain, check with a doctor first.</p></div>';
+ h+='<div class="card"><h2>Backup and restore</h2><p class="note" style="margin:0">Your progress lives on this phone only. Save a backup now and then, so it is safe if the phone changes or browser data is cleared.</p><div class="bk">'+(DL?'<button class="btn" id="bkdl">Download backup file</button>':'')+'<button class="btn alt" id="bkcp">Copy backup code</button></div><p class="note" style="margin:0">To restore, choose a backup file or paste the code, then tap Restore. Restoring merges with what is already here.</p><input type="file" id="bkf" accept=".json,application/json" aria-label="Choose backup file"><textarea id="bkt" rows="3" placeholder="Paste backup code here" aria-label="Backup code"></textarea><button class="btn" id="bkrs">Restore</button><p id="bkm" class="note" role="status"></p></div>';
+ $("prog").innerHTML=h;
+}
+function meals(){
+ var t=mealDay==pi(now),d=day(key(now));d.m=d.m||[];
+ var h='<div class="mchips" role="tablist">'+PLAN.map(function(q,i){return'<button data-md="'+i+'"'+(i==mealDay?' class="on"':'')+'>'+q.n.slice(0,3)+(i==pi(now)?' (today)':'')+'</button>'}).join('')+'</div>';
+ if(t)h+='<p class="sub">'+d.m.length+' of 3 meals eaten today</p>';
+ MT.forEach(function(m,i){h+='<div class="card"><div class="meal"><span class="ic" style="background:linear-gradient(135deg,'+m[3]+')">'+svg(m[2],24)+'</span><div style="flex:1"><h2>'+m[0]+'</h2><small class="note">'+m[1]+'</small><p style="margin:6px 0 0">'+MEALS[mealDay][i]+'</p></div>'+(t?'<input type="checkbox" data-m="'+i+'" aria-label="Mark '+m[0]+' eaten"'+(d.m.indexOf(i)>-1?' checked':'')+'>':'')+'</div></div>'});
+ h+='<div class="card"><h2>Snacks and tips</h2><ul class="ex" style="margin:6px 0 0"><li>Snacks (1 or 2 a day): an apple or guava, roasted chana, a small handful of nuts, cucumber with lemon</li><li>Plate guide: half vegetables, a quarter protein, a quarter roti or rice</li><li>Tea or coffee with little or no sugar; avoid soft drinks and juices</li><li>Eat dinner at least 2 hours before sleep</li><li>Swap foods you dislike for similar ones, for example chicken for fish or eggs</li></ul><p class="note" style="margin-top:10px">General healthy-eating guide, not a medical diet. If Saira has diabetes, thyroid or any other condition, check portions with a doctor or dietitian.</p></div>';
+ $("meals").innerHTML=h;
+}
+function all(){today();plan();meals();prog();$("sub").textContent=now.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"})}
+function tog(a,v){var i=a.indexOf(v);i>-1?a.splice(i,1):a.push(v)}
+document.addEventListener("click",function(ev){
+ var t=ev.target,b=t.closest("button");if(t.closest("a"))return;
+ if(b&&b.dataset.t){["today","plan","meals","prog"].forEach(function(s){$(s).classList.toggle("hide",s!=b.dataset.t)});document.querySelectorAll("nav button").forEach(function(n){n.classList.toggle("on",n===b)});window.scrollTo(0,0);return}
+ if(b&&b.id=="sgo"){submitSetup();return}
+ if(b&&(b.id=="sstart"||b.id=="scancel")){showApp();return}
+ if(b&&b.id=="edp"){setup(true);return}
+ if(b&&b.id=="sbr"){var sv=$("sbt").value;if(!sv.trim()){$("sbm").textContent="Paste the backup code first.";return}restore(sv);if(S.profile)showApp();else $("sbm").textContent="This backup has no profile details. Fill in the form above instead.";return}
+ if(b&&b.id=="bkdl"&&DL){DL.save({filename:"gym-backup-"+key(now)+".json",data:code()}).then(function(){msg("Backup saved.")}).catch(function(e){msg(e&&e.code=="declined"?"Download cancelled.":"Download is not available here. Use Copy backup code instead.")});return}
+ if(b&&b.id=="bkcp"){var c=code(),ta=$("bkt");try{navigator.clipboard.writeText(c).then(function(){msg("Backup code copied. Paste it somewhere safe, like Notes or WhatsApp.")},function(){ta.value=c;ta.select();msg("Select and copy the code shown in the box.")})}catch(e){ta.value=c;ta.select();msg("Select and copy the code shown in the box.")}return}
+ if(b&&b.id=="bkrs"){var v=$("bkt").value;if(!v.trim()){msg("Choose a file or paste the backup code first.");return}restore(v);return}
+ if(b&&b.dataset.wd){var d=day(key(now)),n=+b.dataset.wd+1;d.w=d.w==n?n-1:n;save();today();return}
+ if(b&&b.dataset.w){var d=day(key(now));d.w=Math.max(0,d.w+ +b.dataset.w);save();today();return}
+ if(b&&b.dataset.md){mealDay=+b.dataset.md;meals();return}
+ if(b&&b.dataset.d){openDay=openDay==+b.dataset.d?null:+b.dataset.d;plan();return}
+ if(b&&b.dataset.del){S.log=S.log.filter(function(e){return e.d!=b.dataset.del});save();prog();return}
+ if(b&&b.id=="add"){var w=parseFloat($("w").value),c=parseFloat($("wa").value),g=parseFloat($("g").value);
+  if(g>0)S.goal=g;
+  if(w>0){S.log=S.log.filter(function(e){return e.d!=key(now)});S.log.push({d:key(now),w:w,c:c>0?c:null})}
+  save();prog()}
+});
+document.addEventListener("change",function(ev){
+ var t=ev.target,d=day(key(now));
+ if(t.id=="bkf"&&t.files[0]){var fr=new FileReader();fr.onload=function(){$("bkt").value=fr.result;msg("File loaded. Tap Restore.")};fr.readAsText(t.files[0]);return}
+ if(t.dataset.x!==undefined){tog(d.x,+t.dataset.x);save();today();prog()}
+ if(t.dataset.m!==undefined){d.m=d.m||[];tog(d.m,+t.dataset.m);save();meals()}
+ if(t.dataset.h!==undefined){tog(d.h,+t.dataset.h);save();today()}
+});
+mealDay=pi(now);
+all();
+S.profile?showApp():setup();
+try{if(window.claude&&claude.use)claude.use("downloads").then(function(x){DL=x;if(x)prog()}).catch(function(){})}catch(e){}
+</script>
+<script>
+if('serviceWorker' in navigator&&location.protocol!=='file:'){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
+</script>
+</body>
+</html>
