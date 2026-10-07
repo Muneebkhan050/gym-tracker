@@ -22,10 +22,11 @@ The app then opens full screen with its own icon and works offline after the fir
 
 ## Notes
 
+- Tap the round photo at the top of the app to add or change the profile picture. The photo stays on the phone.
 - Use the same link every time. Data is stored per address, so a new address starts empty.
 - Use Progress > Backup and restore to save progress or move to a new phone.
 - To publish a change later, upload a new `index.html` and raise the number in `sw.js`
-  (`gym-tracker-v1` to `gym-tracker-v2`) so phones pick up the update.
+  (for example `gym-tracker-v2` to `gym-tracker-v3`) so phones pick up the update.
 
 ## Files
 
