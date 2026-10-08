@@ -23,7 +23,7 @@ The app then opens full screen with its own icon and works offline after the fir
 ## Notes
 
 - Tap the round photo at the top of the app to add or change the profile picture. The photo stays on the phone.
-- Progress > Weekly report: tap **Send on WhatsApp** to send the week summary. Save a WhatsApp number (country code first, digits only) to send it straight to one person.
+- Progress > Weekly report: tap **Share on WhatsApp** to send a picture of the week, or **Save as JPG** to keep it. Under "Send as text instead" you can save a WhatsApp number (country code first, digits only) and send the text version.
 - Use the same link every time. Data is stored per address, so a new address starts empty.
 - Use Progress > Backup and restore to save progress or move to a new phone.
 - To publish a change later, upload a new `index.html` and raise the number in `sw.js`

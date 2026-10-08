@@ -200,6 +200,7 @@ nav button.on{background:none;color:#fff}
 pre.rep{white-space:pre-wrap;background:var(--chip);border-radius:14px;padding:12px;font:14px/1.5 inherit;font-family:inherit;margin:10px 0;max-height:270px;overflow:auto}
 .btn.wa{background:#25d366;color:#fff;box-shadow:0 8px 18px rgba(37,211,102,.35)}
 input[type=tel]{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 16px inherit;font-family:inherit;margin-top:4px}
+.repimg{width:100%;aspect-ratio:1080/1740;border-radius:18px;display:block;margin:12px 0;background:var(--chip);box-shadow:0 8px 24px rgba(var(--glow),.2)}
 </style>
 </head>
 <body>
@@ -310,10 +311,60 @@ function repText(){var p=S.profile||{name:""},mon=new Date(now);mon.setDate(now.
  else t.push("\u2696\uFE0F Weight: not logged yet");
  t.push("\uD83D\uDCA7 Water: "+(wat/el).toFixed(1)+" glasses a day, 8 glasses on "+hit+" day"+(hit==1?"":"s"),"\uD83C\uDF7D\uFE0F Meals eaten: "+ml+" of "+3*el,"\uD83D\uDD25 Streak: "+streak()+" day"+(streak()==1?"":"s"),"","Day by day: "+mk.join("  "),"","Keep going, one day at a time!");
  return t.join("\n")}
-function repCard(){var h='<div class="card"><h2>Weekly report</h2><p class="note" style="margin:0">A summary of this week, ready to send on WhatsApp.</p><pre class="rep" id="rept">'+esc(repText())+'</pre><label class="note" for="wan" style="display:block">Send to this WhatsApp number (optional)</label><input id="wan" type="tel" inputmode="tel" placeholder="Country code first, e.g. 923001234567" value="'+esc(S.wa||"")+'"><p class="note" style="margin:6px 0 0">Leave it empty to pick a contact inside WhatsApp. Use digits only, with the country code and no + sign.</p><div class="bk"><button class="btn wa" id="wasend">Send on WhatsApp</button>'+(navigator.share?'<button class="btn alt" id="washare">Share...</button>':'')+'<button class="btn alt" id="wacopy">Copy</button></div><p id="rpm" class="note" role="status"></p></div>';return h}
+function repCard(){return'<div class="card"><h2>Weekly report</h2><p class="note" style="margin:0">A picture of this week, ready to send on WhatsApp.</p><img id="repimg" class="repimg" alt="Weekly report preview"><div class="bk"><button class="btn wa" id="rshare">Share on WhatsApp</button><button class="btn alt" id="rjpg">Save as JPG</button></div><details><summary>Send as text instead</summary><label class="note" for="wan" style="display:block;margin-top:8px">WhatsApp number (optional)</label><input id="wan" type="tel" inputmode="tel" placeholder="Country code first, e.g. 923001234567" value="'+esc(S.wa||"")+'"><p class="note" style="margin:6px 0 0">Digits only, with the country code and no + sign. Leave empty to pick a contact in WhatsApp.</p><div class="bk"><button class="btn wa" id="wasend">Send text on WhatsApp</button><button class="btn alt" id="wacopy">Copy text</button></div></details><p id="rpm" class="note" role="status"></p></div>'}
 function rmsg(t){var m=$("rpm");if(m)m.textContent=t}
 function copyTxt(t,ok,no){try{navigator.clipboard.writeText(t).then(ok,no)}catch(e){no()}}
 function waNum(){var e=$("wan"),v=((e&&e.value)||S.wa||"").replace(/\D/g,"").replace(/^00/,"");S.wa=v;save();return v}
+var repBlob=null,rt=null;
+function repData(){var mon=new Date(now);mon.setDate(now.getDate()-pi(now));var el=pi(now)+1,full=0,ex=0,exT=0,wat=0,hit=0,ml=0,days=[],i,dt,dd,n,pl;
+ for(i=0;i<7;i++){dt=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+i);dd=S.days[key(dt)];pl=PLAN[i].x.length;n=dd?dd.x.length:0;exT+=pl;ex+=n;
+  if(i<el){wat+=dd?dd.w:0;if(dd&&dd.w>=8)hit++;ml+=dd&&dd.m?dd.m.length:0}
+  if(n==pl)full++;days.push({n:PLAN[i].n.slice(0,3),s:n==pl?"full":n>0?"part":i<pi(now)?"miss":"future"})}
+ var L=S.log.slice().sort(function(a,b){return a.d<b.d?-1:1}),cur=L[L.length-1],first=L[0],mk=key(mon),prev=null;L.forEach(function(e){if(e.d<mk)prev=e});
+ var base=prev||L.filter(function(e){return e.d>=mk})[0]||first,f=function(d){return d.toLocaleDateString(undefined,{day:"numeric",month:"short"})};
+ return{name:(S.profile&&S.profile.name)||"",dp:S.profile&&S.profile.dp,range:f(mon)+" to "+f(now),full:full,ex:ex,exT:exT,cur:cur,first:first,base:base,goal:S.goal,wat:wat/el,hit:hit,ml:ml,mlT:3*el,streak:streak(),days:days,L:L.slice(-8),today:pi(now)}}
+function drawReport(){return new Promise(function(res){var D=repData(),cs=getComputedStyle(document.documentElement),V=function(n){return cs.getPropertyValue(n).trim()},g0=V("--g0"),g1=V("--g1"),g2=V("--g2"),g3=V("--g3"),ok="#2f9e6b",ink=isM()?"#14213d":"#3d1d2e",mute=isM()?"#5d6b8a":"#8d6479",F='"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif',W=1080,H=1740,c=document.createElement("canvas");c.width=W;c.height=H;var x=c.getContext("2d");
+ function rr(a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}
+ function tx(t,a,b,sz,wt,col,al){x.font=wt+" "+sz+"px "+F;x.fillStyle=col;x.textAlign=al||"left";x.fillText(t,a,b)}
+ function fit(t,w,sz,wt){x.font=wt+" "+sz+"px "+F;while(t.length>3&&x.measureText(t).width>w)t=t.slice(0,-2);return t}
+ function draw(img){var g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,g0);g.addColorStop(.55,g1);g.addColorStop(1,g3);x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.fillStyle="rgba(255,255,255,.1)";x.beginPath();x.arc(990,110,190,0,7);x.fill();x.beginPath();x.arc(60,640,150,0,7);x.fill();x.beginPath();x.arc(900,1700,220,0,7);x.fill();
+  x.save();x.beginPath();x.arc(150,150,72,0,7);x.clip();if(img){x.drawImage(img,78,78,144,144)}else{x.fillStyle="rgba(255,255,255,.28)";x.fillRect(78,78,144,144);tx((D.name[0]||"?").toUpperCase(),150,178,80,800,"#fff","center")}x.restore();
+  x.lineWidth=8;x.strokeStyle="#fff";x.beginPath();x.arc(150,150,72,0,7);x.stroke();
+  tx(fit(D.name,740,56,800),250,138,56,800,"#fff");tx("Weekly Gym Report",250,188,32,600,"rgba(255,255,255,.88)");tx(D.range,250,232,30,600,"rgba(255,255,255,.88)");
+  var cx=540,cy=470,r=150;x.lineWidth=40;x.lineCap="round";x.strokeStyle="rgba(255,255,255,.25)";x.beginPath();x.arc(cx,cy,r,0,7);x.stroke();
+  if(D.full>0){x.strokeStyle="#fff";x.beginPath();x.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+Math.PI*2*D.full/7);x.stroke()}
+  tx(D.full+"/7",cx,cy+38,118,800,"#fff","center");tx("plan days done",cx,cy+92,30,600,"rgba(255,255,255,.9)","center");
+  x.save();x.shadowColor="rgba(0,0,0,.25)";x.shadowBlur=44;x.shadowOffsetY=18;x.fillStyle="#fff";rr(40,680,1000,920,48);x.fill();x.restore();
+  var cur=D.cur,wk=cur?cur.w-D.base.w:0,tot=cur?cur.w-D.first.w:0;
+  var T=[["Exercises",D.ex+"/"+D.exT,"ticked this week",ink],["Weight now",cur?cur.w+" kg":"-",sg(wk)+" this week",ink],["Total change",sg(tot),"since the start",tot<-0.04?ok:ink],["Water",D.wat.toFixed(1),"glasses a day, "+D.hit+" at 8",ink],["Meals",D.ml+"/"+D.mlT,"eaten so far",ink],["Streak",D.streak+(D.streak==1?" day":" days"),"keep it going",ink]];
+  T.forEach(function(t,i){var a=70+(i%3)*320,b=715+Math.floor(i/3)*190;x.globalAlpha=.1;x.fillStyle=g1;rr(a,b,300,170,28);x.fill();x.globalAlpha=1;tx(t[0],a+24,b+44,26,600,mute);tx(fit(t[1],256,56,800),a+24,b+110,56,800,t[3]);tx(fit(t[2],256,23,500),a+24,b+148,23,500,mute)});
+  if(D.goal&&cur){var st=D.first.w,pc=st>D.goal?Math.max(0,Math.min(1,(st-cur.w)/(st-D.goal))):0;tx("Goal "+D.goal+" kg",70,1128,32,800,ink);tx(Math.max(0,cur.w-D.goal).toFixed(1)+" kg to go",1010,1128,30,600,mute,"right");
+   x.globalAlpha=.12;x.fillStyle=g1;rr(70,1146,940,28,14);x.fill();x.globalAlpha=1;if(pc>0){var gg=x.createLinearGradient(70,0,1010,0);gg.addColorStop(0,g1);gg.addColorStop(1,g2);x.fillStyle=gg;rr(70,1146,Math.max(28,940*pc),28,14);x.fill()}}
+  else tx("Set a goal weight to see progress here",70,1128,28,600,mute);
+  tx("Weight trend",70,1226,26,600,mute);var L=D.L;
+  if(L.length>=2){var mn=Math.min.apply(0,L.map(function(e){return e.w})),mx=Math.max.apply(0,L.map(function(e){return e.w}));if(mx-mn<1){mx+=.5;mn-=.5}
+   var px=function(i){return 90+i*(900/(L.length-1))},py=function(v){return 1335-(v-mn)/(mx-mn)*85};
+   x.beginPath();x.moveTo(px(0),1345);L.forEach(function(e,i){x.lineTo(px(i),py(e.w))});x.lineTo(px(L.length-1),1345);x.closePath();x.globalAlpha=.12;x.fillStyle=g1;x.fill();x.globalAlpha=1;
+   x.lineWidth=7;x.lineJoin="round";x.strokeStyle=g1;x.beginPath();L.forEach(function(e,i){i?x.lineTo(px(i),py(e.w)):x.moveTo(px(i),py(e.w))});x.stroke();
+   L.forEach(function(e,i){x.fillStyle="#fff";x.strokeStyle=g1;x.lineWidth=5;x.beginPath();x.arc(px(i),py(e.w),9,0,7);x.fill();x.stroke()})}
+  else tx("Log two weigh-ins to see your trend",540,1300,26,500,mute,"center");
+  D.days.forEach(function(d,i){var cx2=70+940/7*(i+.5),cy2=1458;
+   if(i==D.today){x.lineWidth=6;x.strokeStyle=g1;x.beginPath();x.arc(cx2,cy2,58,0,7);x.stroke()}
+   x.lineCap="round";x.lineJoin="round";
+   if(d.s=="full"){x.fillStyle=ok;x.beginPath();x.arc(cx2,cy2,46,0,7);x.fill();x.strokeStyle="#fff";x.lineWidth=9;x.beginPath();x.moveTo(cx2-18,cy2+2);x.lineTo(cx2-5,cy2+15);x.lineTo(cx2+19,cy2-14);x.stroke()}
+   else if(d.s=="part"){x.fillStyle="#fff3bf";x.beginPath();x.arc(cx2,cy2,46,0,7);x.fill();x.strokeStyle="#f59f00";x.lineWidth=7;x.stroke();x.fillStyle="#f59f00";x.beginPath();x.arc(cx2,cy2,9,0,7);x.fill()}
+   else if(d.s=="miss"){x.fillStyle="#ffe3e3";x.beginPath();x.arc(cx2,cy2,46,0,7);x.fill();x.strokeStyle="#fa5252";x.lineWidth=8;x.beginPath();x.moveTo(cx2-14,cy2-14);x.lineTo(cx2+14,cy2+14);x.moveTo(cx2+14,cy2-14);x.lineTo(cx2-14,cy2+14);x.stroke()}
+   else{x.globalAlpha=.1;x.fillStyle=g1;x.beginPath();x.arc(cx2,cy2,46,0,7);x.fill();x.globalAlpha=1}
+   tx(d.n,cx2,1548,28,i==D.today?800:600,i==D.today?g1:mute,"center")});
+  tx("Keep going, one day at a time!",540,1665,38,700,"#fff","center");tx("Made with Gym Tracker",540,1708,28,500,"rgba(255,255,255,.8)","center");res(c)}
+ if(D.dp){var im=new Image();im.onload=function(){draw(im)};im.onerror=function(){draw(null)};im.src=D.dp}else draw(null)})}
+function renderRepImg(){clearTimeout(rt);rt=setTimeout(function(){drawReport().then(function(c){c.toBlob(function(b){if(!b)return;repBlob=b;var im=$("repimg");if(im){if(im.dataset.u)URL.revokeObjectURL(im.dataset.u);var u=URL.createObjectURL(b);im.dataset.u=u;im.src=u}},"image/jpeg",.92)})},150)}
+function repName(){return"gym-report-"+key(now)+".jpg"}
+function saveJpg(wa){if(!repBlob){rmsg("The image is still being made. Try again in a second.");return}
+ if(DL){DL.save({filename:repName(),data:repBlob}).then(function(){rmsg("Image saved.")}).catch(function(e){rmsg(e&&e.code=="declined"?"Save cancelled.":"Saving is not available here. Press and hold the picture to save it.")})}
+ else{var u=URL.createObjectURL(repBlob),a=document.createElement("a");a.href=u;a.download=repName();document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},4000);rmsg("Image saved to your downloads.")}
+ if(wa){var nu=waNum();try{window.open("https://wa.me/"+nu+"?text="+encodeURIComponent("Weekly Gym Report (image attached)"),"_blank")}catch(e){}rmsg("Image saved. In WhatsApp, attach it from your gallery.")}}
 var S={log:[],goal:null,days:{}},openDay=null;
 try{var r=localStorage.getItem("ft1");if(r)S=JSON.parse(r)}catch(e){}
 theme();
@@ -367,7 +418,7 @@ function prog(){
  L.slice().reverse().forEach(function(e){h+='<div class="entry"><span>'+e.d+'</span><span>'+e.w+' kg'+(e.c?' / waist '+e.c+' cm':'')+'</span><button data-del="'+e.d+'" aria-label="Delete entry">&#10005;</button></div>'});
  h+='<p class="note" style="margin-top:12px">This is general fitness guidance, not medical advice. If you have any health condition or pain, check with a doctor first.</p></div>';
  h+='<div class="card"><h2>Backup and restore</h2><p class="note" style="margin:0">Your progress lives on this phone only. Save a backup now and then, so it is safe if the phone changes or browser data is cleared.</p><div class="bk">'+(DL?'<button class="btn" id="bkdl">Download backup file</button>':'')+'<button class="btn alt" id="bkcp">Copy backup code</button></div><p class="note" style="margin:0">To restore, choose a backup file or paste the code, then tap Restore. Restoring merges with what is already here.</p><input type="file" id="bkf" accept=".json,application/json" aria-label="Choose backup file"><textarea id="bkt" rows="3" placeholder="Paste backup code here" aria-label="Backup code"></textarea><button class="btn" id="bkrs">Restore</button><p id="bkm" class="note" role="status"></p></div>';
- $("prog").innerHTML=h;
+ $("prog").innerHTML=h;renderRepImg();
 }
 function meals(){
  var t=mealDay==pi(now),d=day(key(now));d.m=d.m||[];
@@ -383,6 +434,8 @@ document.addEventListener("click",function(ev){
  var t=ev.target,b=t.closest("button");if(t.closest("a"))return;
  if(b&&b.dataset.t){["today","plan","meals","prog"].forEach(function(s){$(s).classList.toggle("hide",s!=b.dataset.t)});document.querySelectorAll("nav button").forEach(function(n){n.classList.toggle("on",n===b)});$("pill").style.transform="translateX("+[].indexOf.call(document.querySelectorAll("nav button"),b)*100+"%)";window.scrollTo(0,0);enter(b.dataset.t);return}
  if(b&&(b.id=="dpb"||b.id=="dpb2")){$("dpf").click();return}
+ if(b&&b.id=="rshare"){if(!repBlob){rmsg("The image is still being made. Try again in a second.");return}var fl=new File([repBlob],repName(),{type:"image/jpeg"});if(navigator.canShare&&navigator.canShare({files:[fl]})){navigator.share({files:[fl],title:"Weekly Gym Report"}).catch(function(){rmsg("Sharing cancelled.")})}else saveJpg(true);return}
+ if(b&&b.id=="rjpg"){saveJpg(false);return}
  if(b&&b.id=="wasend"){var tx=repText(),nu=waNum(),u="https://wa.me/"+nu+"?text="+encodeURIComponent(tx),w=null;try{w=window.open(u,"_blank")}catch(e){}if(w)rmsg("Opening WhatsApp...");else copyTxt(tx,function(){rmsg("WhatsApp could not open here, so the report was copied. Paste it in WhatsApp.")},function(){rmsg("WhatsApp could not open here. Select the report above and copy it.")});return}
  if(b&&b.id=="washare"){var tx2=repText();navigator.share({text:tx2}).catch(function(){});return}
  if(b&&b.id=="wacopy"){var tx3=repText();copyTxt(tx3,function(){rmsg("Report copied.")},function(){rmsg("Could not copy. Select the report above and copy it.")});return}
