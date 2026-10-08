@@ -197,6 +197,9 @@ nav button.on{background:none;color:#fff}
 :root[data-g="M"]{--g0:#0b1f4d;--g1:#1d4ed8;--g2:#60a5fa;--g3:#38bdf8;--glow:29,78,216;--glow3:56,189,248;--bg:#eef4ff;--ink:#0f1c3a;--mute:#5d6b8a;--line:#d3e1fb;--chip:#e0eaff}
 @media (prefers-color-scheme:dark){:root[data-g="M"]:not([data-theme="light"]){--bg:#0b1324;--card:#131f38;--ink:#eaf1ff;--mute:#9db0d6;--acc:#6ea8ff;--line:#223559;--chip:#1b2a4a}}
 :root[data-g="M"][data-theme="dark"]{--bg:#0b1324;--card:#131f38;--ink:#eaf1ff;--mute:#9db0d6;--acc:#6ea8ff;--line:#223559;--chip:#1b2a4a}
+pre.rep{white-space:pre-wrap;background:var(--chip);border-radius:14px;padding:12px;font:14px/1.5 inherit;font-family:inherit;margin:10px 0;max-height:270px;overflow:auto}
+.btn.wa{background:#25d366;color:#fff;box-shadow:0 8px 18px rgba(37,211,102,.35)}
+input[type=tel]{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 16px inherit;font-family:inherit;margin-top:4px}
 </style>
 </head>
 <body>
@@ -246,11 +249,11 @@ var MEALS=[
 var MT=[["Breakfast","8 to 9 am","sun","#ff922b,#ffc078"],["Lunch","1 to 2 pm","plate","var(--g1),var(--g2)"],["Dinner","7 to 8 pm","moon","#9c36b5,#e599f7"]],mealDay=0;
 var QS=["Small steps every day add up.","Strong is the new beautiful.","Progress, not perfection.","One workout away from a good mood.","Consistency beats intensity.","Your future self will thank you.","Rest is part of the plan."];
 var DL=null;
-function code(){return JSON.stringify({app:"gym",v:1,log:S.log,goal:S.goal,days:S.days,profile:S.profile})}
+function code(){return JSON.stringify({app:"gym",v:1,log:S.log,goal:S.goal,days:S.days,profile:S.profile,wa:S.wa})}
 function msg(t){var m=$("bkm");if(m)m.textContent=t}
 function restore(txt){try{var o=JSON.parse(txt.trim());if(!o||!Array.isArray(o.log)||typeof o.days!="object")throw 0;
  var by={};S.log.concat(o.log).forEach(function(e){if(e&&e.d&&e.w>0)by[e.d]=e});S.log=Object.keys(by).map(function(k){return by[k]});
- for(var k in o.days)S.days[k]=o.days[k];if(o.goal>0)S.goal=o.goal;if(o.profile&&o.profile.name)S.profile=o.profile;save();all();document.querySelector("[data-t=prog]").click();msg("Backup restored.")}catch(e){msg("That backup could not be read. Check the file or code and try again.")}}
+ for(var k in o.days)S.days[k]=o.days[k];if(o.goal>0)S.goal=o.goal;if(o.profile&&o.profile.name)S.profile=o.profile;if(o.wa)S.wa=o.wa;save();all();document.querySelector("[data-t=prog]").click();msg("Backup restored.")}catch(e){msg("That backup could not be read. Check the file or code and try again.")}}
 function esc(t){return String(t).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function fn(){return esc(((S.profile&&S.profile.name)||"").split(" ")[0])}
 function r1(x){return Math.round(x*10)/10}
@@ -291,6 +294,26 @@ function confetti(){if(matchMedia("(prefers-reduced-motion:reduce)").matches)ret
 function isM(){return !!(S.profile&&S.profile.sex=="M")}
 function theme(g){g=g||(isM()?"M":"F");document.documentElement.setAttribute("data-g",g);var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute("content",g=="M"?"#1d4ed8":"#d6336c")}
 var DGM=["#1d4ed8,#60a5fa","#0e7490,#22d3ee","#4338ca,#818cf8","#0369a1,#38bdf8","#1e40af,#3b82f6","#0f766e,#2dd4bf","#475569,#94a3b8"];
+function sg(x){return(x>0.04?"+":x<-0.04?"\u2212":"")+Math.abs(x).toFixed(1)+" kg"}
+function repText(){var p=S.profile||{name:""},mon=new Date(now);mon.setDate(now.getDate()-pi(now));
+ var el=pi(now)+1,full=0,ex=0,exT=0,wat=0,hit=0,ml=0,mk=[],i,dt,dd,n,pl;
+ for(i=0;i<7;i++){dt=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+i);dd=S.days[key(dt)];pl=PLAN[i].x.length;n=dd?dd.x.length:0;exT+=pl;ex+=n;
+  if(i<el){wat+=dd?dd.w:0;if(dd&&dd.w>=8)hit++;ml+=dd&&dd.m?dd.m.length:0}
+  if(n==pl)full++;mk.push(PLAN[i].n.slice(0,3)+" "+(n==pl?"\u2705":n>0?"\uD83D\uDFE1":i<pi(now)?"\u274C":"\u25AB\uFE0F"))}
+ var L=S.log.slice().sort(function(a,b){return a.d<b.d?-1:1}),cur=L[L.length-1],first=L[0],mk0=key(mon),prev=null;
+ L.forEach(function(e){if(e.d<mk0)prev=e});
+ var base=prev||L.filter(function(e){return e.d>=mk0})[0]||first,fmt=function(d){return d.toLocaleDateString(undefined,{day:"numeric",month:"short"})};
+ var t=["*Weekly Gym Report: "+(p.name||"")+"*","\uD83D\uDCC5 "+fmt(mon)+" to "+fmt(now),"",
+ "\uD83D\uDCAA Plan days completed: "+full+" of 7","\u2705 Exercises ticked: "+ex+" of "+exT];
+ if(cur){t.push("\u2696\uFE0F Weight: "+cur.w+" kg ("+sg(cur.w-base.w)+" this week"+(first!==cur?", "+sg(cur.w-first.w)+" total":"")+")");
+  if(S.goal)t.push("\uD83C\uDFAF Goal: "+S.goal+" kg ("+Math.max(0,cur.w-S.goal).toFixed(1)+" kg to go)")}
+ else t.push("\u2696\uFE0F Weight: not logged yet");
+ t.push("\uD83D\uDCA7 Water: "+(wat/el).toFixed(1)+" glasses a day, 8 glasses on "+hit+" day"+(hit==1?"":"s"),"\uD83C\uDF7D\uFE0F Meals eaten: "+ml+" of "+3*el,"\uD83D\uDD25 Streak: "+streak()+" day"+(streak()==1?"":"s"),"","Day by day: "+mk.join("  "),"","Keep going, one day at a time!");
+ return t.join("\n")}
+function repCard(){var h='<div class="card"><h2>Weekly report</h2><p class="note" style="margin:0">A summary of this week, ready to send on WhatsApp.</p><pre class="rep" id="rept">'+esc(repText())+'</pre><label class="note" for="wan" style="display:block">Send to this WhatsApp number (optional)</label><input id="wan" type="tel" inputmode="tel" placeholder="Country code first, e.g. 923001234567" value="'+esc(S.wa||"")+'"><p class="note" style="margin:6px 0 0">Leave it empty to pick a contact inside WhatsApp. Use digits only, with the country code and no + sign.</p><div class="bk"><button class="btn wa" id="wasend">Send on WhatsApp</button>'+(navigator.share?'<button class="btn alt" id="washare">Share...</button>':'')+'<button class="btn alt" id="wacopy">Copy</button></div><p id="rpm" class="note" role="status"></p></div>';return h}
+function rmsg(t){var m=$("rpm");if(m)m.textContent=t}
+function copyTxt(t,ok,no){try{navigator.clipboard.writeText(t).then(ok,no)}catch(e){no()}}
+function waNum(){var e=$("wan"),v=((e&&e.value)||S.wa||"").replace(/\D/g,"").replace(/^00/,"");S.wa=v;save();return v}
 var S={log:[],goal:null,days:{}},openDay=null;
 try{var r=localStorage.getItem("ft1");if(r)S=JSON.parse(r)}catch(e){}
 theme();
@@ -336,7 +359,7 @@ function prog(){
  var L=S.log.slice().sort(function(a,b){return a.d<b.d?-1:1}),f=L[0],l=L[L.length-1];
  var ch=f?(l.w-f.w).toFixed(1):"0.0",left=(S.goal&&l)?Math.max(0,l.w-S.goal).toFixed(1):"-";
  var wo=0;Object.keys(S.days).forEach(function(k){var d=S.days[k],i=pi(new Date(k+"T00:00"));if(PLAN[i]&&d.x.length==PLAN[i].x.length)wo++});
- var h=planCard()+'<div class="card"><h2>Your progress</h2><div class="stats"><div><strong>'+(l?l.w:"-")+'</strong><small>Now (kg)</small></div><div><strong>'+ch+'</strong><small>Change (kg)</small></div><div><strong>'+left+'</strong><small>To goal (kg)</small></div></div>'+chart()+'<p class="note">Workouts fully completed: <b>'+wo+'</b></p></div>';
+ var h=planCard()+repCard()+'<div class="card"><h2>Your progress</h2><div class="stats"><div><strong>'+(l?l.w:"-")+'</strong><small>Now (kg)</small></div><div><strong>'+ch+'</strong><small>Change (kg)</small></div><div><strong>'+left+'</strong><small>To goal (kg)</small></div></div>'+chart()+'<p class="note">Workouts fully completed: <b>'+wo+'</b></p></div>';
  h+='<div class="card"><h2>Log weigh-in</h2><div class="fields"><div><label for="w">Weight (kg)</label><input id="w" type="number" step="0.1" min="20" inputmode="decimal"></div><div><label for="wa">Waist (cm, optional)</label><input id="wa" type="number" step="0.5" min="30" inputmode="decimal"></div><div><label for="g">Goal weight (kg)</label><input id="g" type="number" step="0.1" min="20" inputmode="decimal" value="'+(S.goal||"")+'"></div></div><button class="btn" id="add">Save</button>';
  h+='<p class="note">Weigh once a week, same day, same time, in the morning. A healthy pace is about 0.25 to 0.5 kg per week. Waist size often drops even when the scale is slow.</p></div>';
  h+='<div class="card"><h2>History</h2>';
@@ -360,6 +383,9 @@ document.addEventListener("click",function(ev){
  var t=ev.target,b=t.closest("button");if(t.closest("a"))return;
  if(b&&b.dataset.t){["today","plan","meals","prog"].forEach(function(s){$(s).classList.toggle("hide",s!=b.dataset.t)});document.querySelectorAll("nav button").forEach(function(n){n.classList.toggle("on",n===b)});$("pill").style.transform="translateX("+[].indexOf.call(document.querySelectorAll("nav button"),b)*100+"%)";window.scrollTo(0,0);enter(b.dataset.t);return}
  if(b&&(b.id=="dpb"||b.id=="dpb2")){$("dpf").click();return}
+ if(b&&b.id=="wasend"){var tx=repText(),nu=waNum(),u="https://wa.me/"+nu+"?text="+encodeURIComponent(tx),w=null;try{w=window.open(u,"_blank")}catch(e){}if(w)rmsg("Opening WhatsApp...");else copyTxt(tx,function(){rmsg("WhatsApp could not open here, so the report was copied. Paste it in WhatsApp.")},function(){rmsg("WhatsApp could not open here. Select the report above and copy it.")});return}
+ if(b&&b.id=="washare"){var tx2=repText();navigator.share({text:tx2}).catch(function(){});return}
+ if(b&&b.id=="wacopy"){var tx3=repText();copyTxt(tx3,function(){rmsg("Report copied.")},function(){rmsg("Could not copy. Select the report above and copy it.")});return}
  if(b&&b.id=="sgo"){submitSetup();return}
  if(b&&(b.id=="sstart"||b.id=="scancel")){showApp();return}
  if(b&&b.id=="edp"){setup(true);return}
@@ -379,6 +405,7 @@ document.addEventListener("click",function(ev){
 });
 document.addEventListener("change",function(ev){
  var t=ev.target,d=day(key(now));
+ if(t.id=="wan"){waNum();return}
  if(t.id=="sx"){theme(t.value=="M"?"M":"F");return}
  if(t.id=="dpf"&&t.files[0]){procImg(t.files[0],function(u){if(!u){$("sub").textContent="Could not read that photo. Try a different picture.";return}if(S.profile){S.profile.dp=u;save()}else tmpDP=u;dp()});t.value="";return}
  if(t.id=="bkf"&&t.files[0]){var fr=new FileReader();fr.onload=function(){$("bkt").value=fr.result;msg("File loaded. Tap Restore.")};fr.readAsText(t.files[0]);return}
