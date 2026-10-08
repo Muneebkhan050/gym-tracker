@@ -182,7 +182,7 @@ button:active,.daybtn:active,.mchips button:active{transform:scale(.96)}
 .btn,button{transition:transform .15s}
 .dp{transition:transform .2s}.dp:hover{transform:scale(1.06) rotate(-3deg)}
 nav{overflow:hidden}
-nav i{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/5);background:linear-gradient(135deg,var(--g1),var(--g2));border-radius:17px;transition:transform .45s cubic-bezier(.3,1.35,.5,1);z-index:0;box-shadow:0 6px 14px rgba(var(--glow),.35)}
+nav i{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/4);background:linear-gradient(135deg,var(--g1),var(--g2));border-radius:17px;transition:transform .45s cubic-bezier(.3,1.35,.5,1);z-index:0;box-shadow:0 6px 14px rgba(var(--glow),.35)}
 nav button{position:relative;z-index:1}
 nav button.on{background:none;color:#fff}
 .cf{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:90}
@@ -201,13 +201,6 @@ pre.rep{white-space:pre-wrap;background:var(--chip);border-radius:14px;padding:1
 .btn.wa{background:#25d366;color:#fff;box-shadow:0 8px 18px rgba(37,211,102,.35)}
 input[type=tel]{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 16px inherit;font-family:inherit;margin-top:4px}
 .repimg{width:100%;aspect-ratio:1080/1740;border-radius:18px;display:block;margin:12px 0;background:var(--chip);box-shadow:0 8px 24px rgba(var(--glow),.2)}
-.hgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.hgrid>div{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;display:flex;gap:12px;align-items:center}
-.hgrid b{display:block;font-size:22px;line-height:1.1}
-.hgrid small{color:var(--mute)}
-.hform{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
-.hform label{font-size:13px;color:var(--mute);display:block}
-.hform input{margin-top:3px}
 </style>
 </head>
 <body>
@@ -219,15 +212,13 @@ input[type=tel]{width:100%;padding:11px;border-radius:10px;border:1px solid var(
 <section id="today"></section>
 <section id="plan" class="hide"></section>
 <section id="meals" class="hide"></section>
-<section id="health" class="hide"></section>
 <section id="prog" class="hide"></section>
 </main>
 <nav>
 <i id="pill" aria-hidden="true"></i>
 <button data-t="today" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>Today</span></button>
-<button data-t="plan"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Plan</span></button>
+<button data-t="plan"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Weekly plan</span></button>
 <button data-t="meals"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg><span>Meals</span></button>
-<button data-t="health"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg><span>Health</span></button>
 <button data-t="prog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h16M8 15l4-4 3 3 5-6"/></svg><span>Progress</span></button>
 </nav>
 <script>
@@ -278,7 +269,7 @@ function planHTML(p){var r=calc(p),h='<div class="kv"><span>BMI</span><b>'+r1(r.
  var msg=r.cat=="Underweight"?"Your BMI is below the healthy range, so losing weight is not recommended. Eat regular meals with enough protein and build strength with light weights. A doctor can check if you need to gain weight.":r.cat=="Healthy"?"Your weight is in the healthy range, so there is no need to lose weight. To lose fat and tone up, focus on strength training, daily walking and tracking your waist.":"A steady loss of about 0.5 kg a week is safe and easier to keep off. Losing just 5% of your body weight first already helps your health.";
  return h+'<div class="warn">'+msg+'</div><p class="note">These are estimates, not medical advice. For South Asian adults health risks can start from a BMI of 23, and waist size matters too. Never eat below '+(p.sex=="M"?1500:1200)+' kcal a day without a doctor. If you have a health condition, check with a doctor first.</p>'}
 function planCard(){var p=S.profile;if(!p)return"";return'<div class="card"><h2>Your plan</h2>'+planHTML(p)+'<button class="btn alt" id="edp" style="margin-top:10px">Update my details</button></div>'}
-function show(setupOn){["today","plan","meals","health","prog"].forEach(function(i){$(i).classList.add("hide")});$("setup").classList.toggle("hide",!setupOn);document.querySelector("nav").style.display=setupOn?"none":"";window.scrollTo(0,0)}
+function show(setupOn){["today","plan","meals","prog"].forEach(function(i){$(i).classList.add("hide")});$("setup").classList.toggle("hide",!setupOn);document.querySelector("nav").style.display=setupOn?"none":"";window.scrollTo(0,0)}
 function showApp(){theme();var p=S.profile,t=esc(p.name)+"'s Gym Tracker";$("title").innerHTML=t;document.title=p.name+"'s Gym Tracker";$("setup").classList.add("hide");document.querySelector("nav").style.display="";all();document.querySelector("[data-t=today]").click()}
 function opt(v,c,t){return'<option value="'+v+'"'+(c==v?' selected':'')+'>'+t+'</option>'}
 function setup(edit){var p=S.profile||{};show(true);dp();enter("setup");
@@ -318,7 +309,6 @@ function repText(){var p=S.profile||{name:""},mon=new Date(now);mon.setDate(now.
  if(cur){t.push("\u2696\uFE0F Weight: "+cur.w+" kg ("+sg(cur.w-base.w)+" this week"+(first!==cur?", "+sg(cur.w-first.w)+" total":"")+")");
   if(S.goal)t.push("\uD83C\uDFAF Goal: "+S.goal+" kg ("+Math.max(0,cur.w-S.goal).toFixed(1)+" kg to go)")}
  else t.push("\u2696\uFE0F Weight: not logged yet");
- var sp=0,sc=0;for(i=0;i<el;i++){var q2=S.days[key(new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+i))];if(q2&&q2.hl&&q2.hl.steps){sp+=q2.hl.steps;sc++}}if(sc)t.push("\uD83D\uDC5F Steps: "+Math.round(sp/sc).toLocaleString()+" a day on average");
  t.push("\uD83D\uDCA7 Water: "+(wat/el).toFixed(1)+" glasses a day, 8 glasses on "+hit+" day"+(hit==1?"":"s"),"\uD83C\uDF7D\uFE0F Meals eaten: "+ml+" of "+3*el,"\uD83D\uDD25 Streak: "+streak()+" day"+(streak()==1?"":"s"),"","Day by day: "+mk.join("  "),"","Keep going, one day at a time!");
  return t.join("\n")}
 function repCard(){return'<div class="card"><h2>Weekly report</h2><p class="note" style="margin:0">A picture of this week, ready to send on WhatsApp.</p><img id="repimg" class="repimg" alt="Weekly report preview"><div class="bk"><button class="btn wa" id="rshare">Share on WhatsApp</button><button class="btn alt" id="rjpg">Save as JPG</button></div><details><summary>Send as text instead</summary><label class="note" for="wan" style="display:block;margin-top:8px">WhatsApp number (optional)</label><input id="wan" type="tel" inputmode="tel" placeholder="Country code first, e.g. 923001234567" value="'+esc(S.wa||"")+'"><p class="note" style="margin:6px 0 0">Digits only, with the country code and no + sign. Leave empty to pick a contact in WhatsApp.</p><div class="bk"><button class="btn wa" id="wasend">Send text on WhatsApp</button><button class="btn alt" id="wacopy">Copy text</button></div></details><p id="rpm" class="note" role="status"></p></div>'}
@@ -375,31 +365,6 @@ function saveJpg(wa){if(!repBlob){rmsg("The image is still being made. Try again
  if(DL){DL.save({filename:repName(),data:repBlob}).then(function(){rmsg("Image saved.")}).catch(function(e){rmsg(e&&e.code=="declined"?"Save cancelled.":"Saving is not available here. Press and hold the picture to save it.")})}
  else{var u=URL.createObjectURL(repBlob),a=document.createElement("a");a.href=u;a.download=repName();document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},4000);rmsg("Image saved to your downloads.")}
  if(wa){var nu=waNum();try{window.open("https://wa.me/"+nu+"?text="+encodeURIComponent("Weekly Gym Report (image attached)"),"_blank")}catch(e){}rmsg("Image saved. In WhatsApp, attach it from your gallery.")}}
-function HB(){try{return window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()?Capacitor.registerPlugin("Health"):null}catch(e){return null}}
-function hl(k){var d=day(k||key(now));d.hl=d.hl||{};return d.hl}
-function hmsg(t){var m=$("hmsg");if(m)m.textContent=t}
-function health(){var t=hl(),sg=S.sg||8000,st=t.steps||0,pc=Math.min(100,Math.round(st/sg*100)),vals=[],i,dt,q,tot=0,cn=0,mx=1;
- for(i=6;i>=0;i--){dt=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);q=S.days[key(dt)];var v=(q&&q.hl&&q.hl.steps)||0;vals.push({n:dt.toLocaleDateString(undefined,{weekday:"short"}).slice(0,1),v:v});if(v){tot+=v;cn++}mx=Math.max(mx,v)}
- mx=Math.max(mx,sg)*1.1;
- var ring='<svg width="96" height="96" viewBox="0 0 88 88" role="img" aria-label="'+pc+' percent of step goal"><circle cx="44" cy="44" r="36" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="9"/><circle cx="44" cy="44" r="36" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-dasharray="226.2" stroke-dashoffset="'+226.2*(1-pc/100)+'" transform="rotate(-90 44 44)"/><text x="44" y="50" text-anchor="middle" fill="#fff" font-size="18" font-weight="800">'+pc+'%</text></svg>';
- var h='<div class="hero"><div><div class="hi">Steps today</div><div class="ft" style="font-size:40px;margin:0">'+st.toLocaleString()+'</div><div class="chips"><span>Goal '+sg.toLocaleString()+'</span><span>'+(cn?"Avg "+Math.round(tot/cn).toLocaleString()+" a day":"No data yet")+'</span></div></div><div class="ring">'+ring+'</div></div>';
- var T=[["dist","Distance",t.dist,"km","walk"],["cal","Active calories",t.cal,"kcal","dumbbell"],["sleep","Sleep",t.sleep,"hours","moon"],["hr","Heart rate",t.hr,"bpm","body"]];
- h+='<div class="hgrid">'+T.map(function(x){return'<div><span class="ic">'+svg(x[4],24)+'</span><span><b>'+(x[2]!=null?x[2]:"-")+'</b><small>'+x[1]+' ('+x[3]+')</small></span></div>'}).join('')+'</div>';
- var W=320,H2=140,P=22,bw=(W-2*P)/7,bars=vals.map(function(o,j){var bh=o.v/mx*(H2-2*P-8);return'<rect x="'+(P+j*bw+6)+'" y="'+(H2-P-bh)+'" width="'+(bw-12)+'" height="'+Math.max(bh,2)+'" rx="6" fill="'+(o.v>=sg?"var(--ok)":"var(--acc)")+'" opacity="'+(o.v?1:.25)+'"/><text x="'+(P+j*bw+bw/2)+'" y="'+(H2-6)+'" text-anchor="middle" font-size="11" fill="var(--mute)">'+o.n+'</text>'}).join(''),gy=H2-P-sg/mx*(H2-2*P-8);
- h+='<div class="card"><h2>Steps, last 7 days</h2><svg viewBox="0 0 '+W+' '+H2+'" role="img" aria-label="Steps for the last 7 days">'+bars+'<line x1="'+P+'" x2="'+(W-P)+'" y1="'+gy+'" y2="'+gy+'" stroke="var(--ok)" stroke-dasharray="5 4"/></svg><p class="note" style="margin:4px 0 0">Green bars reached the goal.</p></div>';
- var nat=HB();
- h+='<div class="card"><h2>Health app</h2>'+(nat?'<p class="note" style="margin:0">Read steps, distance, calories, sleep and heart rate from '+(Capacitor.getPlatform()=="ios"?"Apple Health":"Health Connect")+'.</p><div class="bk"><button class="btn" id="hsync">Sync from Health app</button></div>':'<p class="note" style="margin:0">Reading your phone\'s health app directly needs the Android or iPhone app version of Gym Tracker (see the Health setup guide). Until then, type today\'s numbers from your health app below.</p>')+'<p id="hmsg" class="note" role="status"></p></div>';
- h+='<div class="card"><h2>Add today\'s numbers</h2><div class="hform"><div><label for="hs">Steps</label><input id="hs" type="number" min="0" inputmode="numeric" value="'+(t.steps!=null?t.steps:"")+'"></div><div><label for="hd">Distance (km)</label><input id="hd" type="number" min="0" step="0.01" inputmode="decimal" value="'+(t.dist!=null?t.dist:"")+'"></div><div><label for="hc">Active calories</label><input id="hc" type="number" min="0" inputmode="numeric" value="'+(t.cal!=null?t.cal:"")+'"></div><div><label for="hsl">Sleep (hours)</label><input id="hsl" type="number" min="0" max="24" step="0.1" inputmode="decimal" value="'+(t.sleep!=null?t.sleep:"")+'"></div><div><label for="hh">Heart rate (bpm)</label><input id="hh" type="number" min="30" max="220" inputmode="numeric" value="'+(t.hr!=null?t.hr:"")+'"></div><div><label for="hg">Daily step goal</label><input id="hg" type="number" min="1000" step="500" inputmode="numeric" value="'+sg+'"></div></div><button class="btn" id="hsave">Save</button></div>';
- $("health").innerHTML=h}
-async function hsync(){var H=HB();if(!H){hmsg("Health app access is only in the Android or iPhone app.");return}
- try{hmsg("Connecting...");var a=await H.isAvailable();if(!a.available){if(a.platform=="android"&&H.openHealthConnectSettings)await H.openHealthConnectSettings();hmsg("Health data is not available yet. Install or update Health Connect, then try again.");return}
-  await H.requestAuthorization({read:["steps","distance","calories","heartRate","sleep"]});
-  var sd=new Date(now.getFullYear(),now.getMonth(),now.getDate()-6).toISOString(),ed=new Date().toISOString(),M=[["steps","steps","sum",1],["dist","distance","sum",.001],["cal","calories","sum",1],["hr","heartRate","average",1],["sleep","sleep","sum",0]],n=0;
-  for(var i=0;i<M.length;i++){try{var r=await H.queryAggregated({dataType:M[i][1],startDate:sd,endDate:ed,bucket:"day",aggregation:M[i][2]});
-   (r.samples||[]).forEach(function(x){var v=x.value!==undefined?x.value:(x.values&&(x.values.sum!==undefined?x.values.sum:x.values.average));if(v==null)return;var f=M[i][3];
-    if(M[i][0]=="sleep")v=v>1440?v/3600:v>24?v/60:v;else v=v*f;
-    var o=hl(key(new Date(x.startDate)));o[M[i][0]]=M[i][0]=="steps"||M[i][0]=="cal"||M[i][0]=="hr"?Math.round(v):Math.round(v*10)/10;n++})}catch(e){}}
-  save();health();hmsg(n?"Synced "+n+" values from your Health app.":"Connected, but no data was found for the last 7 days.")}catch(e){hmsg("Could not sync: "+(e&&e.message?e.message:"permission was not given."))}}
 var S={log:[],goal:null,days:{}},openDay=null;
 try{var r=localStorage.getItem("ft1");if(r)S=JSON.parse(r)}catch(e){}
 theme();
@@ -463,14 +428,12 @@ function meals(){
  h+='<div class="card"><h2>Snacks and tips</h2><ul class="ex" style="margin:6px 0 0"><li>Snacks (1 or 2 a day): an apple or guava, roasted chana, a small handful of nuts, cucumber with lemon</li><li>Plate guide: half vegetables, a quarter protein, a quarter roti or rice</li><li>Tea or coffee with little or no sugar; avoid soft drinks and juices</li><li>Eat dinner at least 2 hours before sleep</li><li>Swap foods you dislike for similar ones, for example chicken for fish or eggs</li></ul><p class="note" style="margin-top:10px">General healthy-eating guide, not a medical diet. If Saira has diabetes, thyroid or any other condition, check portions with a doctor or dietitian.</p></div>';
  $("meals").innerHTML=h;
 }
-function all(){dp();today();plan();meals();health();prog();$("sub").textContent=now.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"})}
+function all(){dp();today();plan();meals();prog();$("sub").textContent=now.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"})}
 function tog(a,v){var i=a.indexOf(v);i>-1?a.splice(i,1):a.push(v)}
 document.addEventListener("click",function(ev){
  var t=ev.target,b=t.closest("button");if(t.closest("a"))return;
- if(b&&b.dataset.t){["today","plan","meals","health","prog"].forEach(function(s){$(s).classList.toggle("hide",s!=b.dataset.t)});document.querySelectorAll("nav button").forEach(function(n){n.classList.toggle("on",n===b)});$("pill").style.transform="translateX("+[].indexOf.call(document.querySelectorAll("nav button"),b)*100+"%)";window.scrollTo(0,0);enter(b.dataset.t);return}
+ if(b&&b.dataset.t){["today","plan","meals","prog"].forEach(function(s){$(s).classList.toggle("hide",s!=b.dataset.t)});document.querySelectorAll("nav button").forEach(function(n){n.classList.toggle("on",n===b)});$("pill").style.transform="translateX("+[].indexOf.call(document.querySelectorAll("nav button"),b)*100+"%)";window.scrollTo(0,0);enter(b.dataset.t);return}
  if(b&&(b.id=="dpb"||b.id=="dpb2")){$("dpf").click();return}
- if(b&&b.id=="hsync"){hsync();return}
- if(b&&b.id=="hsave"){var t2=hl(),g=function(i){var v=parseFloat($(i).value);return isNaN(v)?undefined:v};t2.steps=g("hs");t2.dist=g("hd");t2.cal=g("hc");t2.sleep=g("hsl");t2.hr=g("hh");var gg=g("hg");if(gg>=1000)S.sg=gg;save();health();hmsg("Saved.");return}
  if(b&&b.id=="rshare"){if(!repBlob){rmsg("The image is still being made. Try again in a second.");return}var fl=new File([repBlob],repName(),{type:"image/jpeg"});if(navigator.canShare&&navigator.canShare({files:[fl]})){navigator.share({files:[fl],title:"Weekly Gym Report"}).catch(function(){rmsg("Sharing cancelled.")})}else saveJpg(true);return}
  if(b&&b.id=="rjpg"){saveJpg(false);return}
  if(b&&b.id=="wasend"){var tx=repText(),nu=waNum(),u="https://wa.me/"+nu+"?text="+encodeURIComponent(tx),w=null;try{w=window.open(u,"_blank")}catch(e){}if(w)rmsg("Opening WhatsApp...");else copyTxt(tx,function(){rmsg("WhatsApp could not open here, so the report was copied. Paste it in WhatsApp.")},function(){rmsg("WhatsApp could not open here. Select the report above and copy it.")});return}
